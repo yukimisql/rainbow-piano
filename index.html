@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rainbow Piano</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -18,7 +18,7 @@
             user-select: none;
             -webkit-user-select: none;
             gap: 25px;
-            font-family: 'Nunito', sans-serif;
+            font-family: 'Fredoka', sans-serif;
         }
 
         .piano-container {
@@ -40,10 +40,8 @@
 
         .black-keys-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 100%;
+            top: 0; left: 0;
+            width: 0; height: 100%;
             pointer-events: none;
         }
 
@@ -68,44 +66,31 @@
             transition: background 0.4s ease, transform 0.1s ease;
             display: block;
             margin-left: 105px;
+            position: relative;
         }
 
         .black-key:active { transform: scaleX(0.97); }
         .black-key.active { background: #4a5568; }
 
-        .tooltip {
+        .date-label {
             position: absolute;
-            top: 50%;
-            right: 165px;
-            transform: translateY(-50%) translateX(-4px) rotate(90deg);
-            transform-origin: center center;
-            background: #4a3828;
-            color: #fff8f0;
-            font-size: 12px;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
             font-weight: 700;
-            font-family: 'Nunito', sans-serif;
-            white-space: nowrap;
-            padding: 5px 10px;
-            border-radius: 8px;
-            pointer-events: none;
+            font-family: 'Fredoka', sans-serif;
+            color: #ffffff;
             opacity: 0;
             transition: opacity 0.2s ease;
-            letter-spacing: 0.5px;
+            pointer-events: none;
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            letter-spacing: 2px;
         }
 
-        .tooltip::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 100%;
-            transform: translateY(-50%);
-            border: 5px solid transparent;
-            border-left-color: #4a3828;
-        }
-
-        .black-key-wrap.unlocked:hover .tooltip {
-            opacity: 1;
-        }
+        .black-key-wrap.unlocked:hover .date-label { opacity: 1; }
 
         .white-key.reveal-1 { background: #ffe3e5; }
         .white-key.reveal-2 { background: #fff0e0; }
@@ -163,24 +148,19 @@
 
         <div class="black-keys-container">
             <div class="black-key-wrap" data-index="0" data-left="0" data-right="1">
-                <div class="black-key"></div>
-                <div class="tooltip"></div>
+                <div class="black-key"><div class="date-label"></div></div>
             </div>
             <div class="black-key-wrap" data-index="1" data-left="1" data-right="2">
-                <div class="black-key"></div>
-                <div class="tooltip"></div>
+                <div class="black-key"><div class="date-label"></div></div>
             </div>
             <div class="black-key-wrap" data-index="2" data-left="3" data-right="4">
-                <div class="black-key"></div>
-                <div class="tooltip"></div>
+                <div class="black-key"><div class="date-label"></div></div>
             </div>
             <div class="black-key-wrap" data-index="3" data-left="4" data-right="5">
-                <div class="black-key"></div>
-                <div class="tooltip"></div>
+                <div class="black-key"><div class="date-label"></div></div>
             </div>
             <div class="black-key-wrap" data-index="4" data-left="5" data-right="6">
-                <div class="black-key"></div>
-                <div class="tooltip"></div>
+                <div class="black-key"><div class="date-label"></div></div>
             </div>
         </div>
     </div>
@@ -229,21 +209,21 @@
             whiteKeys.forEach(wk => wk.className = 'white-key');
             let count = 0;
             wraps.forEach((wrap, i) => {
-                const bk  = wrap.querySelector('.black-key');
-                const tip = wrap.querySelector('.tooltip');
-                const l   = parseInt(wrap.getAttribute('data-left'));
-                const r   = parseInt(wrap.getAttribute('data-right'));
+                const bk    = wrap.querySelector('.black-key');
+                const label = wrap.querySelector('.date-label');
+                const l     = parseInt(wrap.getAttribute('data-left'));
+                const r     = parseInt(wrap.getAttribute('data-right'));
                 if (keyStates[i]) {
                     bk.classList.add('active');
                     wrap.classList.add('unlocked');
                     count++;
                     whiteKeys[l].classList.add(`reveal-${l + 1}`);
                     whiteKeys[r].classList.add(`reveal-${r + 1}`);
-                    tip.textContent = keyDates[i] ? formatDate(keyDates[i]) : '';
+                    label.textContent = keyDates[i] ? formatDate(keyDates[i]) : '';
                 } else {
                     bk.classList.remove('active');
                     wrap.classList.remove('unlocked');
-                    tip.textContent = '';
+                    label.textContent = '';
                 }
             });
             if (count === 5) piano.classList.add('max-saturation');
