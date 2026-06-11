@@ -77,19 +77,20 @@
             position: absolute;
             top: 50%;
             right: 165px;
-            transform: translateY(-50%) translateX(-4px);
+            transform: translateY(-50%) translateX(-4px) rotate(90deg);
+            transform-origin: center center;
             background: #4a3828;
             color: #fff8f0;
             font-size: 12px;
             font-weight: 700;
+            font-family: 'Nunito', sans-serif;
             white-space: nowrap;
             padding: 5px 10px;
             border-radius: 8px;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: opacity 0.2s ease;
             letter-spacing: 0.5px;
-            font-family: 'Nunito', sans-serif;
         }
 
         .tooltip::after {
@@ -102,9 +103,8 @@
             border-left-color: #4a3828;
         }
 
-        .black-key-wrap:hover .tooltip {
+        .black-key-wrap.unlocked:hover .tooltip {
             opacity: 1;
-            transform: translateY(-50%) translateX(0);
         }
 
         .white-key.reveal-1 { background: #ffe3e5; }
@@ -124,20 +124,30 @@
         .piano-container.max-saturation .white-key:nth-child(7) { background: #e2bbf0; }
 
         .reset-button {
-            padding: 12px 36px;
-            font-size: 16px;
-            font-weight: 800;
-            color: #7f6d55;
+            width: 52px;
+            height: 52px;
             background-color: #eadabe;
             border: none;
-            border-radius: 12px;
+            border-radius: 50%;
             cursor: pointer;
-            font-family: 'Nunito', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
         .reset-button:hover { background-color: #dfd0b2; }
         .reset-button:active { transform: scale(0.95); }
+
+        .reset-button svg {
+            width: 22px;
+            height: 22px;
+            stroke: #7f6d55;
+            fill: none;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
     </style>
 </head>
 <body>
@@ -154,28 +164,33 @@
         <div class="black-keys-container">
             <div class="black-key-wrap" data-index="0" data-left="0" data-right="1">
                 <div class="black-key"></div>
-                <div class="tooltip">Not unlocked yet</div>
+                <div class="tooltip"></div>
             </div>
             <div class="black-key-wrap" data-index="1" data-left="1" data-right="2">
                 <div class="black-key"></div>
-                <div class="tooltip">Not unlocked yet</div>
+                <div class="tooltip"></div>
             </div>
             <div class="black-key-wrap" data-index="2" data-left="3" data-right="4">
                 <div class="black-key"></div>
-                <div class="tooltip">Not unlocked yet</div>
+                <div class="tooltip"></div>
             </div>
             <div class="black-key-wrap" data-index="3" data-left="4" data-right="5">
                 <div class="black-key"></div>
-                <div class="tooltip">Not unlocked yet</div>
+                <div class="tooltip"></div>
             </div>
             <div class="black-key-wrap" data-index="4" data-left="5" data-right="6">
                 <div class="black-key"></div>
-                <div class="tooltip">Not unlocked yet</div>
+                <div class="tooltip"></div>
             </div>
         </div>
     </div>
 
-    <button class="reset-button" id="resetBtn">RESET</button>
+    <button class="reset-button" id="resetBtn" aria-label="Reset">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+        </svg>
+    </button>
 
     <script>
         const wraps = document.querySelectorAll('.black-key-wrap');
@@ -184,12 +199,11 @@
         const resetBtn = document.getElementById('resetBtn');
 
         let keyStates = [false, false, false, false, false];
-        let keyDates = [null, null, null, null, null];
+        let keyDates  = [null, null, null, null, null];
 
         function formatDate(iso) {
             const d = new Date(iso);
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            return `${months[d.getMonth()]} ${d.getDate()}`;
+            return `${d.getMonth()+1}/${d.getDate()}`;
         }
 
         function loadSavedState() {
@@ -198,7 +212,7 @@
                 if (saved) {
                     const p = JSON.parse(saved);
                     keyStates = p.states || [false, false, false, false, false];
-                    keyDates = p.dates || [null, null, null, null, null];
+                    keyDates  = p.dates  || [null, null, null, null, null];
                 }
             } catch(e) {}
             renderKeyboard();
@@ -215,19 +229,21 @@
             whiteKeys.forEach(wk => wk.className = 'white-key');
             let count = 0;
             wraps.forEach((wrap, i) => {
-                const bk = wrap.querySelector('.black-key');
+                const bk  = wrap.querySelector('.black-key');
                 const tip = wrap.querySelector('.tooltip');
-                const l = parseInt(wrap.getAttribute('data-left'));
-                const r = parseInt(wrap.getAttribute('data-right'));
+                const l   = parseInt(wrap.getAttribute('data-left'));
+                const r   = parseInt(wrap.getAttribute('data-right'));
                 if (keyStates[i]) {
                     bk.classList.add('active');
+                    wrap.classList.add('unlocked');
                     count++;
                     whiteKeys[l].classList.add(`reveal-${l + 1}`);
                     whiteKeys[r].classList.add(`reveal-${r + 1}`);
-                    tip.textContent = keyDates[i] ? `Unlocked ${formatDate(keyDates[i])}` : 'Unlocked';
+                    tip.textContent = keyDates[i] ? formatDate(keyDates[i]) : '';
                 } else {
                     bk.classList.remove('active');
-                    tip.textContent = 'Not unlocked yet';
+                    wrap.classList.remove('unlocked');
+                    tip.textContent = '';
                 }
             });
             if (count === 5) piano.classList.add('max-saturation');
@@ -237,11 +253,8 @@
             wrap.querySelector('.black-key').addEventListener('click', function() {
                 const i = parseInt(wrap.getAttribute('data-index'));
                 keyStates[i] = !keyStates[i];
-                if (keyStates[i] && !keyDates[i]) {
-                    keyDates[i] = new Date().toISOString();
-                } else if (!keyStates[i]) {
-                    keyDates[i] = null;
-                }
+                if (keyStates[i] && !keyDates[i]) keyDates[i] = new Date().toISOString();
+                else if (!keyStates[i]) keyDates[i] = null;
                 saveState();
                 renderKeyboard();
             });
@@ -249,7 +262,7 @@
 
         resetBtn.addEventListener('click', function() {
             keyStates = [false, false, false, false, false];
-            keyDates = [null, null, null, null, null];
+            keyDates  = [null, null, null, null, null];
             saveState();
             renderKeyboard();
         });
