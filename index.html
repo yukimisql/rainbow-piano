@@ -9,13 +9,12 @@
         body {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             background-color: #f7f4eb;
-            overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
             gap: 25px;
@@ -24,17 +23,18 @@
 
         .piano-container {
             display: flex;
+            flex-direction: column;
             position: relative;
         }
 
         .white-key {
-            width: 75px;
-            height: 260px;
+            width: 260px;
+            height: 75px;
             background: #ffffff;
             border: none;
-            border-radius: 0 0 12px 12px;
+            border-radius: 12px 0 0 12px;
             box-sizing: border-box;
-            margin: 0 2px;
+            margin: 2px 0;
             transition: background 0.4s ease;
         }
 
@@ -42,8 +42,8 @@
             position: absolute;
             top: 0;
             left: 0;
-            height: 0;
-            width: 100%;
+            width: 0;
+            height: 100%;
             pointer-events: none;
         }
 
@@ -52,31 +52,32 @@
             pointer-events: auto;
         }
 
-        .black-key-wrap:nth-child(1) { left: 56px; }
-        .black-key-wrap:nth-child(2) { left: 135px; }
-        .black-key-wrap:nth-child(3) { left: 293px; }
-        .black-key-wrap:nth-child(4) { left: 372px; }
-        .black-key-wrap:nth-child(5) { left: 451px; }
+        .black-key-wrap:nth-child(1) { top: 56px; }
+        .black-key-wrap:nth-child(2) { top: 135px; }
+        .black-key-wrap:nth-child(3) { top: 293px; }
+        .black-key-wrap:nth-child(4) { top: 372px; }
+        .black-key-wrap:nth-child(5) { top: 451px; }
 
         .black-key {
-            width: 44px;
-            height: 155px;
+            width: 155px;
+            height: 44px;
             background: #b1c2cb;
             border: none;
-            border-radius: 0 0 8px 8px;
+            border-radius: 8px 0 0 8px;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.1s ease;
+            transition: background 0.4s ease, transform 0.1s ease;
             display: block;
+            margin-left: 105px;
         }
 
-        .black-key:active { transform: scaleY(0.97); }
-        .black-key.active { background: #735135; }
+        .black-key:active { transform: scaleX(0.97); }
+        .black-key.active { background: #4a5568; }
 
         .tooltip {
             position: absolute;
-            bottom: 165px;
-            left: 50%;
-            transform: translateX(-50%) translateY(4px);
+            top: 50%;
+            right: 165px;
+            transform: translateY(-50%) translateX(-4px);
             background: #4a3828;
             color: #fff8f0;
             font-size: 12px;
@@ -88,21 +89,22 @@
             opacity: 0;
             transition: opacity 0.2s ease, transform 0.2s ease;
             letter-spacing: 0.5px;
+            font-family: 'Nunito', sans-serif;
         }
 
         .tooltip::after {
             content: '';
             position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
             border: 5px solid transparent;
-            border-top-color: #4a3828;
+            border-left-color: #4a3828;
         }
 
         .black-key-wrap:hover .tooltip {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
+            transform: translateY(-50%) translateX(0);
         }
 
         .white-key.reveal-1 { background: #ffe3e5; }
