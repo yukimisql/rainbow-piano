@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Block Piano</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f7f4eb;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            gap: 25px;
+        }
+
+        .piano-container {
+            display: flex;
+            position: relative;
+        }
+
+        .white-key {
+            width: 75px;
+            height: 260px;
+            background: #ffffff;
+            border: none;
+            border-radius: 0 0 12px 12px;
+            box-sizing: border-box;
+            margin: 0 2px;
+            transition: background 0.4s ease;
+        }
+
+        .black-keys-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 0;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .black-key-wrap {
+            position: absolute;
+            pointer-events: auto;
+        }
+
+        .black-key-wrap:nth-child(1) { left: 56px; }
+        .black-key-wrap:nth-child(2) { left: 135px; }
+        .black-key-wrap:nth-child(3) { left: 293px; }
+        .black-key-wrap:nth-child(4) { left: 372px; }
+        .black-key-wrap:nth-child(5) { left: 451px; }
+
+        .black-key {
+            width: 44px;
+            height: 155px;
+            background: #b1c2cb;
+            border: none;
+            border-radius: 0 0 8px 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
+            display: block;
+        }
+
+        .black-key:active { transform: scaleY(0.97); }
+        .black-key.active { background: #735135; }
+
+        .tooltip {
+            position: absolute;
+            bottom: 165px;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: #4a3828;
+            color: #fff8f0;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            padding: 5px 10px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #4a3828;
+        }
+
+        .black-key-wrap:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .white-key.reveal-1 { background: #ffe3e5; }
+        .white-key.reveal-2 { background: #fff0e0; }
+        .white-key.reveal-3 { background: #fffded; }
+        .white-key.reveal-4 { background: #f4faeb; }
+        .white-key.reveal-5 { background: #eaf6fc; }
+        .white-key.reveal-6 { background: #eaeefc; }
+        .white-key.reveal-7 { background: #f6eafc; }
+
+        .piano-container.max-saturation .white-key:nth-child(1) { background: #ff9aa2; }
+        .piano-container.max-saturation .white-key:nth-child(2) { background: #ffcab0; }
+        .piano-container.max-saturation .white-key:nth-child(3) { background: #fff5ba; }
+        .piano-container.max-saturation .white-key:nth-child(4) { background: #b5ead7; }
+        .piano-container.max-saturation .white-key:nth-child(5) { background: #a7dbd8; }
+        .piano-container.max-saturation .white-key:nth-child(6) { background: #90afdf; }
+        .piano-container.max-saturation .white-key:nth-child(7) { background: #e2bbf0; }
+
+        .reset-button {
+            padding: 12px 36px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #7f6d55;
+            background-color: #eadabe;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .reset-button:hover { background-color: #dfd0b2; }
+        .reset-button:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+    <div class="piano-container" id="piano">
+        <div class="white-key"></div>
+        <div class="white-key"></div>
+        <div class="white-key"></div>
+        <div class="white-key"></div>
+        <div class="white-key"></div>
+        <div class="white-key"></div>
+        <div class="white-key"></div>
+
+        <div class="black-keys-container">
+            <div class="black-key-wrap" data-index="0" data-left="0" data-right="1">
+                <div class="black-key"></div>
+                <div class="tooltip">Not unlocked yet</div>
+            </div>
+            <div class="black-key-wrap" data-index="1" data-left="1" data-right="2">
+                <div class="black-key"></div>
+                <div class="tooltip">Not unlocked yet</div>
+            </div>
+            <div class="black-key-wrap" data-index="2" data-left="3" data-right="4">
+                <div class="black-key"></div>
+                <div class="tooltip">Not unlocked yet</div>
+            </div>
+            <div class="black-key-wrap" data-index="3" data-left="4" data-right="5">
+                <div class="black-key"></div>
+                <div class="tooltip">Not unlocked yet</div>
+            </div>
+            <div class="black-key-wrap" data-index="4" data-left="5" data-right="6">
+                <div class="black-key"></div>
+                <div class="tooltip">Not unlocked yet</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="reset-button" id="resetBtn">RESET</button>
+
+    <script>
+        const wraps = document.querySelectorAll('.black-key-wrap');
+        const whiteKeys = document.querySelectorAll('.white-key');
+        const piano = document.getElementById('piano');
+        const resetBtn = document.getElementById('resetBtn');
+
+        let keyStates = [false, false, false, false, false];
+        let keyDates = [null, null, null, null, null];
+
+        function formatDate(iso) {
+            const d = new Date(iso);
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${months[d.getMonth()]} ${d.getDate()}`;
+        }
+
+        function loadSavedState() {
+            try {
+                const saved = localStorage.getItem('piano_progress_2026');
+                if (saved) {
+                    const p = JSON.parse(saved);
+                    keyStates = p.states || [false, false, false, false, false];
+                    keyDates = p.dates || [null, null, null, null, null];
+                }
+            } catch(e) {}
+            renderKeyboard();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('piano_progress_2026', JSON.stringify({ states: keyStates, dates: keyDates }));
+            } catch(e) {}
+        }
+
+        function renderKeyboard() {
+            piano.classList.remove('max-saturation');
+            whiteKeys.forEach(wk => wk.className = 'white-key');
+            let count = 0;
+            wraps.forEach((wrap, i) => {
+                const bk = wrap.querySelector('.black-key');
+                const tip = wrap.querySelector('.tooltip');
+                const l = parseInt(wrap.getAttribute('data-left'));
+                const r = parseInt(wrap.getAttribute('data-right'));
+                if (keyStates[i]) {
+                    bk.classList.add('active');
+                    count++;
+                    whiteKeys[l].classList.add(`reveal-${l + 1}`);
+                    whiteKeys[r].classList.add(`reveal-${r + 1}`);
+                    tip.textContent = keyDates[i] ? `Unlocked ${formatDate(keyDates[i])}` : 'Unlocked';
+                } else {
+                    bk.classList.remove('active');
+                    tip.textContent = 'Not unlocked yet';
+                }
+            });
+            if (count === 5) piano.classList.add('max-saturation');
+        }
+
+        wraps.forEach(wrap => {
+            wrap.querySelector('.black-key').addEventListener('click', function() {
+                const i = parseInt(wrap.getAttribute('data-index'));
+                keyStates[i] = !keyStates[i];
+                if (keyStates[i] && !keyDates[i]) {
+                    keyDates[i] = new Date().toISOString();
+                } else if (!keyStates[i]) {
+                    keyDates[i] = null;
+                }
+                saveState();
+                renderKeyboard();
+            });
+        });
+
+        resetBtn.addEventListener('click', function() {
+            keyStates = [false, false, false, false, false];
+            keyDates = [null, null, null, null, null];
+            saveState();
+            renderKeyboard();
+        });
+
+        loadSavedState();
+    </script>
+
+</body>
+</html>
